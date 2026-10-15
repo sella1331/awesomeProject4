@@ -1,0 +1,116 @@
+POST http://localhost:8080/tasks/create
+Content-Type: application/json
+
+{
+  "text": "Купить молоко",
+  "urgency": "high"
+}
+###
+GET http://localhost:8080/tasks/allTasks
+Accept: application/json
+
+###
+POST http://localhost:8080/tasks/create
+Content-Type: application/json
+
+{
+  "text": "Подготовиться к созвону",
+  "urgency": "low"
+}
+###
+POST http://localhost:8080/tasks/create
+Content-Type: application/json
+
+{
+"text": "Позвонить клиенту по поводу контракта",
+"urgency": "high"
+}
+
+###
+POST http://localhost:8080/tasks/create
+Content-Type: application/json
+
+{
+  "title": "a last of moment",
+  "description": "Купить подарок коллеге на день рождения",
+  "urgency": "low"
+}
+
+###
+POST http://localhost:8080/tasks/create
+Content-Type: application/json
+
+{
+  "title": "a last of moment",
+  "description": "Обновить документацию проекта в Confluence",
+  "urgency": "medium"
+}
+
+### 4. Проверка дубликата
+POST http://localhost:8080/tasks/create
+Content-Type: application/json
+
+{
+  "title": "a new moment",
+  "description": "Обновить документацию проекта в Confluence",
+  "urgency": "medium"
+}
+###
+DELETE http://localhost:8080/tasks/758f3976-0010-499a-85c0-48a1c556f1f6
+###
+GET http://localhost:8080/tasks/allTasks
+Accept: application/json
+###
+GET http://localhost:8080/tasks/b7706168-555b-4db6-861c-9eee88697153
+
+###
+PUT http://localhost:8080/tasks/87d2b1bb-657a-4bac-ad4d-68a1fa091e62
+Content-Type: application/json
+
+{
+  "description": "Новый текст задачи",
+  "status": "In Progress"
+}
+###
+d4fec526-8433-4a83-95e8-0261212b1158
+###
+
+POST http://localhost:8080/users/register
+Content-Type: application/json
+
+{
+  "uuid": "",
+  "username": "Alla",
+  "email": "ddh@mail.ru",
+  "password": "Secr#grrget1!"
+}
+###
+POST http://localhost:8080/users/register
+Content-Type: application/json
+
+{
+  "uuid": "",
+  "username": "maria99",
+  "email": "maria@example.com",
+  "password": "Pa##ssword1"
+}
+###
+POST http://localhost:8080/users/login
+Content-Type: application/json
+
+{
+  "email": "maria@example.com",
+  "password": "Pa##ssword1"
+}
+###
+PUT http://localhost:8080/users/update/37072c93-fb36-42fb-8dc9-b3a39aebb34c
+Content-Type: application/json
+
+{
+  "uuid": "",
+  "username": "maria9911",
+  "email": "maria@example.com",
+  "password": "Pa##ssword1"
+}
+###
+DELETE http://localhost:8080/users/delete/f03bc80d-a3fc-40cf-ac65-35222910ff72
