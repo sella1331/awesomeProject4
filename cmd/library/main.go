@@ -11,8 +11,9 @@ import (
 func main() {
 	log.Println("Library service started..")
 	//TODO configuration server
-	repo := inMemory.NewStorage()
-	server := server.NewLiraryAPI(repo)
+	tasksStorage := inMemory.NewStorage()
+	usersStorage := inMemory.UserStorage()
+	server := server.NewLiraryAPI(tasksStorage, usersStorage)
 	//TODO start server
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
