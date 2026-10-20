@@ -9,24 +9,16 @@ import (
 
 	"dario.cat/mergo"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Storage struct {
 	mu    sync.RWMutex
 	tasks map[string]models.Task
-	users map[string]models.User
-}
-
-func (s *Storage) LogIn(username, password string) error {
-	//TODO implement me
-	panic("implement me")
 }
 
 func NewStorage() *Storage {
 	return &Storage{
 		tasks: make(map[string]models.Task),
-		users: make(map[string]models.User),
 	}
 }
 
@@ -98,70 +90,4 @@ func (s *Storage) RepeatInfoTask(taskID string, newTaks models.Task) (*models.Ta
 
 	s.tasks[taskID] = task
 	return &task, nil
-}
-
-func (s *Storage) RegisterUser(user models.User) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	for _, us := range s.users {
-		if us.Email == user.Email {
-			fmt.Printf("User с такой почтой уже существует %s. Пропускаем.\n", us.Email)
-			return errors.ErrTaskAlreadyExists
-		}
-	}
-	userID := uuid.New().String()
-	user.UUID = userID
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		fmt.Printf("error hashing password: %s\n", err)
-		return err
-	}
-	user.Password = string(hash)
-	fmt.Printf("User %s, Password hash: %s\n", user, string(hash))
-	s.users[userID] = user
-	return nil
-}
-
-func (s *Storage) DeleteUser(userID string) error {
-	if _, exists := s.users[userID]; !exists {
-		return errors.ErrNotFind
-	}
-
-	delete(s.users, userID)
-	return nil
-}
-func (s *Storage) RepeatInfoUsers(userID string, newUser models.User) (*models.User, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	user, exists := s.users[userID]
-	if !exists {
-		return nil, errors.ErrNotFind
-	}
-	err := mergo.Merge(&user, newUser, mergo.WithOverride)
-	if err != nil {
-		return nil, err
-	}
-	s.users[userID] = user
-	return &user, nil
-}
-
-func (s *Storage) InfoUser(userID string) (*models.User, error) {
-	for _, t := range s.users {
-		if t.UUID == userID {
-			copyUser := t
-			return &copyUser, nil
-		}
-	}
-	return nil, errors.ErrNotFind
-}
-
-func (s *Storage) LogInNow(user models.UserLogin) (models.User, error) {
-	for _, t := range s.users {
-		if t.Email == user.Email {
-			return t, nil
-		}
-	}
-	return models.User{}, errors.ErrInvalidCreds
 }

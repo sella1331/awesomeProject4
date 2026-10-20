@@ -103,7 +103,7 @@ Content-Type: application/json
   "password": "Pa##ssword1"
 }
 ###
-PUT http://localhost:8080/users/update/37072c93-fb36-42fb-8dc9-b3a39aebb34c
+PUT http://localhost:8080/users/update/6cc5fee9-99c6-42c9-8d79-da0e93152020
 Content-Type: application/json
 
 {
@@ -114,3 +114,24 @@ Content-Type: application/json
 }
 ###
 DELETE http://localhost:8080/users/delete/f03bc80d-a3fc-40cf-ac65-35222910ff72
+###
+GET http://localhost:8080/users/users
+
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjk2YmIyMTQtMjJhZC00MjgxLWJlZmUtNDgyYThhOTU0YWVlIiwiZXhwIjoxNzkyNDkwNjMwLCJpYXQiOjE3OTI0ODk3MzB9._-T_U9C0BxSB9pBv79SdPxi6bk_Iyb6MQmGKBMAZ4aQ"
+
+
+###
+POST http://localhost:8080/tasks/create
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjk2YmIyMTQtMjJhZC00MjgxLWJlZmUtNDgyYThhOTU0YWVlIiwiZXhwIjoxNzkyNDkwNjMwLCJpYXQiOjE3OTI0ODk3MzB9._-T_U9C0BxSB9pBv79SdPxi6bk_Iyb6MQmGKBMAZ4aQ
+Content-Type: application/json
+
+{
+  "title": "Купить молоко",
+  "description": "2 литра, 3.2%",
+  "urgency": "high",
+  "status": "new"
+}
+###
+GET http://localhost:8080/tasks/allTasks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjk2YmIyMTQtMjJhZC00MjgxLWJlZmUtNDgyYThhOTU0YWVlIiwiZXhwIjoxNzkyNDkwNjMwLCJpYXQiOjE3OTI0ODk3MzB9._-T_U9C0BxSB9pBv79SdPxi6bk_Iyb6MQmGKBMAZ4aQ
+Content-Type: application/json
