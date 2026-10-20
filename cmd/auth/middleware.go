@@ -34,7 +34,6 @@ func Middleware(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Authorization header is invalid"})
 		return
 	}
-	ctx.Set("userID", claims)
+	ctx.Set("userID", claims.UserID)
 	ctx.Next()
-
 }

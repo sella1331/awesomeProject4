@@ -103,6 +103,15 @@ Content-Type: application/json
   "password": "Pa##ssword1"
 }
 ###
+GET http://localhost:8080/users/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTM1YzE2ZjYtNzZmMi00NTgwLWE2MGMtZmQ2NGRhNzY2NjQyIiwiZXhwIjoxNzkyNTI2MTM5LCJpYXQiOjE3OTI1MjUyMzl9.iUX6nuqioEE84xwkkJB7VmnDpDISOJ7GAdyW80J8UGc
+Content-Type: application/json
+
+{
+  "email": "maria@example.com",
+  "password": "Pa##ssword1"
+}
+###
 PUT http://localhost:8080/users/update/6cc5fee9-99c6-42c9-8d79-da0e93152020
 Content-Type: application/json
 
@@ -133,5 +142,15 @@ Content-Type: application/json
 }
 ###
 GET http://localhost:8080/tasks/allTasks
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjk2YmIyMTQtMjJhZC00MjgxLWJlZmUtNDgyYThhOTU0YWVlIiwiZXhwIjoxNzkyNDkwNjMwLCJpYXQiOjE3OTI0ODk3MzB9._-T_U9C0BxSB9pBv79SdPxi6bk_Iyb6MQmGKBMAZ4aQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjg2M2RkMDAtZmQ5OS00MGViLWIxODEtM2ZmNDdiODBjNjk1IiwiZXhwIjoxNzkyNTA3ODk4LCJpYXQiOjE3OTI1MDY5OTh9.h6Lw9FMZdvVax9IzIMjhXfrRLU64pQW0rbJUHxI49gA
 Content-Type: application/json
+
+###
+POST http://localhost:8080/users/refresh
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTM1YzE2ZjYtNzZmMi00NTgwLWE2MGMtZmQ2NGRhNzY2NjQyIiwiZXhwIjoxNzkyNTI2MTM5LCJpYXQiOjE3OTI1MjUyMzl9.iUX6nuqioEE84xwkkJB7VmnDpDISOJ7GAdyW80J8UGc
+Content-Type: application/json
+
+{
+  "email": "maria@example.com",
+  "password": "Pa##ssword1"
+}

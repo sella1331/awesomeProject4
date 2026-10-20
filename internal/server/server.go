@@ -70,9 +70,10 @@ func (LAPI LibraryApI) configRoutes() {
 		user.DELETE("/delete/:userID", LAPI.DeletedUser)
 		user.GET("/:userID", LAPI.HowIam)
 		user.POST("/login", LAPI.UserLogin)
+		user.POST("/refresh", auth.RefreshToken)
 
 		protected := user.Group("", auth.Middleware)
-		protected.GET("/profile")
+		protected.GET("/profile", LAPI.HowIamToken)
 	}
 
 	tasks := router.Group("/tasks", auth.Middleware)
@@ -229,11 +230,18 @@ func (LAPI *LibraryApI) UserLogin(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	refreshToken, err := auth.GenerateRefreshToken(repoUser.UUID)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
 	fmt.Printf("check password: %s\n and input %s\n", repoUser.Password, user.Password)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"user":  repoUser,
-		"token": token,
+		"user":         repoUser,
+		"token":        token,
+		"refreshToken": refreshToken,
 	})
 }
 
@@ -297,8 +305,10 @@ func (LAPI *LibraryApI) allUsers(ctx *gin.Context) {
 
 func (LAPI *LibraryApI) HowIamToken(ctx *gin.Context) {
 	userID := ctx.GetString("userID")
+	fmt.Printf(userID)
 	if userID == "" {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "not found userID"})
+		return
 	}
 	user, err := LAPI.users.InfoUser(userID)
 	if err != nil {
