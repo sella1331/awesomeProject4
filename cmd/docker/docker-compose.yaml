@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: psql
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: psql
+      POSTGRES_PASSWORD: pgpass
+      POSTGRES_DB: shortener_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-net
+
+  app:
+    build:
+      context: ../..
+      dockerfile: cmd/docker/Dockerfile
+    container_name: myapp
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+    networks:
+      - app-net
+
+volumes:
+  pgdata:
+
+networks:
+  app-net:
+    driver: bridge

@@ -3,7 +3,11 @@ package main
 import (
 	"awesomeProject4/internal/server"
 	"awesomeProject4/internal/storage/inMemory"
+	"awesomeProject4/internal/storage/inMemory/db"
+	"fmt"
 	"log"
+
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
@@ -11,8 +15,21 @@ import (
 func main() {
 	log.Println("Library service started..")
 	//TODO configuration server
-	tasksStorage := inMemory.NewStorage()
-	usersStorage := inMemory.UserStorage()
+	var usersStorage server.UserRepository
+	var tasksStorage server.TaskRepository
+	if dbSql, err := inMemory.RunDB(); err != nil {
+		fmt.Println(err)
+		log.Println("🔄 Переключение на резервное хранилище (In-Memory)...")
+		usersStorage = inMemory.UserStorage()
+		tasksStorage = inMemory.NewStorage()
+	} else {
+		log.Println("✅ Успешное подключение к PostgreSQL! Используется база данных.")
+		defer dbSql.Close()
+
+		usersStorage = db.NewPsqlStorage(dbSql)
+		tasksStorage = db.NewPsqlStorageTask(dbSql) // или временная заглушка
+	}
+	//
 	server := server.NewLiraryAPI(tasksStorage, usersStorage)
 	//TODO start server
 	if err := server.Run(); err != nil {
@@ -20,4 +37,5 @@ func main() {
 	}
 	//TODO stop server
 	log.Println("Library service stopped")
+
 }
