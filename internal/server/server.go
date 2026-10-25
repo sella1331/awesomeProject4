@@ -71,7 +71,7 @@ func (LAPI LibraryApI) configRoutes() {
 		protected.GET("/profile", LAPI.HowIamToken)
 	}
 
-	tasks := router.Group("/tasks", auth.Middleware)
+	tasks := router.Group("/tasks")
 	{
 		tasks.POST("/create", LAPI.createTask)
 		tasks.GET("/allTasks", LAPI.allTasks)

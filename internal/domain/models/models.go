@@ -2,6 +2,7 @@ package models
 
 type Task struct {
 	TaskID      string `json:"task_id,omitempty"`
+	UserID      string `json:"user_id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	DateCreated string `json:"date_created,omitempty"`

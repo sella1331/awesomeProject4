@@ -92,41 +92,42 @@ Content-Type: application/json
   "uuid": "",
   "username": "maria99",
   "email": "maria@example.com",
-  "password": "Pa##ssword1"
+  "password": "Pa##sswford1"
 }
 ###
 POST http://localhost:8080/users/login
 Content-Type: application/json
 
 {
-  "email": "maria@example.com",
-  "password": "Pa##ssword1"
+  "email": "ddh@mail.ru",
+  "password": "Secr#grrget1!"
 }
 ###
 GET http://localhost:8080/users/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZTM1YzE2ZjYtNzZmMi00NTgwLWE2MGMtZmQ2NGRhNzY2NjQyIiwiZXhwIjoxNzkyNTI2MTM5LCJpYXQiOjE3OTI1MjUyMzl9.iUX6nuqioEE84xwkkJB7VmnDpDISOJ7GAdyW80J8UGc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZmQzNWM2NzctMzNiYy00YTlhLWExZTctOTBkZWJkNTAwNTgzIiwiZXhwIjoxNzkyOTYxOTAyLCJpYXQiOjE3OTI5NjEwMDJ9.9Vm7odGYksp_s-0Y4OdVVlWP0RoEJiR2_K0A__l31Fk
 Content-Type: application/json
 
 {
-  "email": "maria@example.com",
-  "password": "Pa##ssword1"
+  "email": "ddh@mail.ru",
+  "password": "Secr#grrget1!"
 }
 ###
-PUT http://localhost:8080/users/update/6cc5fee9-99c6-42c9-8d79-da0e93152020
+GET http://localhost:8080/users/71c28a3c-eeda-4c7d-94fb-7f4f3985122c
+###
+PUT http://localhost:8080/users/update/ed03245b-0eed-4153-8c07-8812d451cbfe
 Content-Type: application/json
 
 {
   "uuid": "",
   "username": "maria9911",
-  "email": "maria@example.com",
+  "email": "maffr666ia@example.com",
   "password": "Pa##ssword1"
 }
 ###
-DELETE http://localhost:8080/users/delete/f03bc80d-a3fc-40cf-ac65-35222910ff72
+DELETE http://localhost:8080/users/delete/6fa1bcf7-ccf6-4e34-bf85-ea06fdfed5d3
 ###
-GET http://localhost:8080/users/users
+GET http://localhost:8080/users/8b176fc3-7394-498b-a091-fef9c449a08f
 
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiYjk2YmIyMTQtMjJhZC00MjgxLWJlZmUtNDgyYThhOTU0YWVlIiwiZXhwIjoxNzkyNDkwNjMwLCJpYXQiOjE3OTI0ODk3MzB9._-T_U9C0BxSB9pBv79SdPxi6bk_Iyb6MQmGKBMAZ4aQ"
 
 
 ###
