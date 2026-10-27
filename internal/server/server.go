@@ -12,11 +12,11 @@ import (
 )
 
 type TaskRepository interface {
-	GetTasks() ([]models.Task, error)
+	GetTasks(userID string) ([]models.Task, error)
 	SaveTask(task models.Task) error
-	DeleteTask(taskID string) error
-	InfoTask(taskID string) (*models.Task, error)
-	RepeatInfoTask(taskID string, task models.Task) (*models.Task, error)
+	DeleteTask(taskID string, userID string) error
+	InfoTask(taskID string, userID string) (*models.Task, error)
+	RepeatInfoTask(taskID string, userID string, task models.Task) (*models.Task, error)
 }
 
 type UserRepository interface {
@@ -71,7 +71,7 @@ func (LAPI LibraryApI) configRoutes() {
 		protected.GET("/profile", LAPI.HowIamToken)
 	}
 
-	tasks := router.Group("/tasks")
+	tasks := router.Group("/tasks", auth.Middleware)
 	{
 		tasks.POST("/create", LAPI.createTask)
 		tasks.GET("/allTasks", LAPI.allTasks)

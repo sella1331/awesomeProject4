@@ -3,6 +3,7 @@ package server
 import (
 	"awesomeProject4/internal/domain/errors"
 	"awesomeProject4/internal/domain/models"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -10,8 +11,13 @@ import (
 )
 
 func (LAPI *LibraryApI) allTasks(ctx *gin.Context) {
-
-	tasks, err := LAPI.tasks.GetTasks()
+	userID := ctx.GetString("userID")
+	if userID == "" {
+		fmt.Printf(userID)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "not found userID"})
+		return
+	}
+	tasks, err := LAPI.tasks.GetTasks(userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -20,7 +26,15 @@ func (LAPI *LibraryApI) allTasks(ctx *gin.Context) {
 }
 
 func (LAPI *LibraryApI) createTask(ctx *gin.Context) {
-	task := models.Task{}
+	userID := ctx.GetString("userID")
+	fmt.Printf("USERIDDD %s", userID)
+
+	if userID == "" {
+		fmt.Printf(userID)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "not found userID"})
+		return
+	}
+	var task models.Task
 	err := ctx.ShouldBindBodyWithJSON(&task)
 	log.Println(task)
 	if err != nil {
@@ -28,6 +42,7 @@ func (LAPI *LibraryApI) createTask(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	task.UserID = userID
 	if err := LAPI.tasks.SaveTask(task); err != nil {
 		if err == errors.ErrTaskAlreadyExists {
 			ctx.JSON(http.StatusConflict, gin.H{
@@ -43,7 +58,12 @@ func (LAPI *LibraryApI) createTask(ctx *gin.Context) {
 
 func (LAPI *LibraryApI) deleteTask(ctx *gin.Context) {
 	taskID := ctx.Param("taskID")
-	err := LAPI.tasks.DeleteTask(taskID)
+	userID := ctx.GetString("userID")
+	if userID == "" {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	err := LAPI.tasks.DeleteTask(taskID, userID)
 	if err != nil {
 		if err == errors.ErrNotFind {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "задача не найдена"})
@@ -58,16 +78,30 @@ func (LAPI *LibraryApI) deleteTask(ctx *gin.Context) {
 
 func (LAPI *LibraryApI) InfoTask(ctx *gin.Context) {
 	taskID := ctx.Param("taskID")
-	task, err := LAPI.tasks.InfoTask(taskID)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	userID := ctx.GetString("userID")
+	if userID == "" {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "your task:", "task": task})
+	task, err := LAPI.tasks.InfoTask(taskID, userID)
+	if err != nil {
+		if err == errors.ErrNotFind {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "your task",
+		"task":    task,
+		"user_id": userID,
+	})
 }
 
 func (LAPI *LibraryApI) RepeatInfoTask(ctx *gin.Context) {
 	taskID := ctx.Param("taskID")
+	userID := ctx.GetString("userID")
 	var newTask models.Task
 	err := ctx.ShouldBindBodyWithJSON(&newTask)
 	log.Println(newTask)
@@ -76,7 +110,7 @@ func (LAPI *LibraryApI) RepeatInfoTask(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	task, err := LAPI.tasks.RepeatInfoTask(taskID, newTask)
+	task, err := LAPI.tasks.RepeatInfoTask(taskID, userID, newTask)
 	if err != nil {
 		if err == errors.ErrNotFind {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

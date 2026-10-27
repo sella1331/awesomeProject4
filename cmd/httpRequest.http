@@ -39,6 +39,8 @@ Content-Type: application/json
 ###
 POST http://localhost:8080/tasks/create
 Content-Type: application/json
+auth_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZmQzNWM2NzctMzNiYy00YTlhLWExZTctOTBkZWJkNTAwNTgzIiwiZXhwIjoxNzkzMDA3NTgyLCJpYXQiOjE3OTMwMDY2ODJ9.4p-BoaoKiJ1xgpXRr4wYfV3n_FldA240hsyy81_dVwc
+
 
 {
   "title": "a last of moment",

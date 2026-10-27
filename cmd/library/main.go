@@ -10,8 +10,6 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-// TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
 func main() {
 	log.Println("Library service started..")
 	//TODO configuration server
@@ -27,7 +25,7 @@ func main() {
 		defer dbSql.Close()
 
 		usersStorage = db.NewPsqlStorage(dbSql)
-		tasksStorage = db.NewPsqlStorageTask(dbSql) // или временная заглушка
+		tasksStorage = db.NewPsqlStorageTask(dbSql)
 	}
 	//
 	server := server.NewLiraryAPI(tasksStorage, usersStorage)

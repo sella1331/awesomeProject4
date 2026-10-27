@@ -108,7 +108,16 @@ func (LAPI *LibraryApI) DeletedUser(ctx *gin.Context) {
 }
 
 func (LAPI *LibraryApI) RepeaterLogin(ctx *gin.Context) {
-	userID := ctx.Param("userID")
+	userID, exist := ctx.Get("userID")
+	if !exist {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "forbidden"})
+		return
+	}
+	userIdStd, ok := userID.(string)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id type"})
+		return
+	}
 	var newUser models.User
 	err := ctx.ShouldBindBodyWithJSON(&newUser)
 	log.Println(newUser)
@@ -117,7 +126,7 @@ func (LAPI *LibraryApI) RepeaterLogin(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := LAPI.users.RepeatInfoUsers(userID, newUser)
+	user, err := LAPI.users.RepeatInfoUsers(userIdStd, newUser)
 	if err != nil {
 		if err == errors.ErrNotFind {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})

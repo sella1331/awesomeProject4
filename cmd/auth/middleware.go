@@ -1,38 +1,31 @@
 package auth
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Middleware(ctx *gin.Context) {
 
-	authHeader := ctx.GetHeader("Authorization")
-	log.Printf("AUTH HEADER: %q (len=%d)", authHeader, len(authHeader))
-	log.Printf("ALL HEADERS: %+v", ctx.Request.Header)
+	authHeader, err := ctx.Cookie("auth_token")
 
-	if authHeader == "" {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"message": "Authorization header is empty",
-		})
-		return
-	}
-	authHeaderParts := strings.Split(authHeader, " ")
-	if len(authHeaderParts) != 2 || authHeaderParts[0] != "Bearer" {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"message": "Authorization header is invalid",
-		})
-		return
-	}
-
-	claims, err := ParseAccessToken(authHeaderParts[1])
 	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"message": "Authorization cookie is empty or error",
+		})
+		return
+	}
+	log.Printf("COOKIE ERROR: %v", err)
+	claims, err := ParseAccessToken(authHeader)
+	if err != nil {
+		log.Printf("PARSE ERROR: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Authorization header is invalid"})
 		return
 	}
 	ctx.Set("userID", claims.UserID)
+	fmt.Printf(claims.UserID)
 	ctx.Next()
 }
