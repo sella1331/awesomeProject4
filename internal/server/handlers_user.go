@@ -1,7 +1,7 @@
 package server
 
 import (
-	"awesomeProject4/cmd/auth"
+	"awesomeProject4/internal/auth"
 	"awesomeProject4/internal/domain/errors"
 	"awesomeProject4/internal/domain/models"
 	"fmt"
