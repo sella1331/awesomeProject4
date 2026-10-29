@@ -83,11 +83,25 @@ func (LAPI *LibraryApI) UserLogin(ctx *gin.Context) {
 	}
 
 	fmt.Printf("check password: %s\n and input %s\n", repoUser.Password, user.Password)
+	ctx.SetCookie("auth_token",
+		token,
+		3600,
+		"/",
+		"localhost",
+		false,
+		true)
+	ctx.SetCookie("refresh_token",
+		refreshToken,
+		60*60*24,
+		"/",
+		"localhost",
+		false,
+		true)
+	fmt.Printf("refresh token: %s\n", refreshToken)
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"user":         repoUser,
-		"token":        token,
-		"refreshToken": refreshToken,
+		"user":  repoUser,
+		"token": token,
 	})
 }
 
