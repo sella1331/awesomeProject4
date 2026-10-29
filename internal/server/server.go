@@ -2,6 +2,7 @@ package server
 
 import (
 	"awesomeProject4/cmd/auth"
+	"awesomeProject4/internal/domain/gzipMiddleware"
 	"awesomeProject4/internal/domain/models"
 	"context"
 	//"errors"
@@ -57,6 +58,7 @@ func (LAPI *LibraryApI) Run() error {
 func (LAPI LibraryApI) configRoutes() {
 	router := gin.Default()
 
+	router.Use(gzipMiddleware.GzipMiddleware())
 	user := router.Group("/users")
 	{
 		user.GET("", LAPI.allUsers)
@@ -65,7 +67,7 @@ func (LAPI LibraryApI) configRoutes() {
 		user.DELETE("/delete/:userID", LAPI.DeletedUser)
 		user.GET("/:userID", LAPI.HowIam)
 		user.POST("/login", LAPI.UserLogin)
-		user.POST("/refresh", auth.RefreshToken)
+		user.POST("/refresh", RefreshToken)
 
 		protected := user.Group("", auth.Middleware)
 		protected.GET("/profile", LAPI.HowIamToken)
