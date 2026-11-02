@@ -23,6 +23,8 @@ func NewStorage() *Storage {
 }
 
 func (s *Storage) GetTasks(userID string) ([]models.Task, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	var tasksList []models.Task
 	if len(s.tasks) == 0 {
 		return nil, errors.ErrTaskIsEmpty
@@ -31,6 +33,8 @@ func (s *Storage) GetTasks(userID string) ([]models.Task, error) {
 		if task.UserID == userID {
 			tasksList = append(tasksList, task)
 		}
+	}
+	if len(tasksList) == 0 {
 		return nil, errors.ErrNotFind
 	}
 	return tasksList, nil

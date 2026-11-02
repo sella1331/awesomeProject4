@@ -63,6 +63,7 @@ func (LAPI *LibraryApI) deleteTask(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
+
 	err := LAPI.tasks.DeleteTask(taskID, userID)
 	if err != nil {
 		if err == errors.ErrNotFind {

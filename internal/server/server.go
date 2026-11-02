@@ -48,14 +48,13 @@ func NewLiraryAPI(tasks TaskRepository, users UserRepository) *LibraryApI {
 
 func (LAPI *LibraryApI) Run() error {
 	log.Printf("Listening on port %s ...", LAPI.httpSrv.Addr)
-	err := LAPI.httpSrv.ListenAndServe()
-	if err != nil {
-		LAPI.httpSrv.Shutdown(context.Background())
-	}
-	return err
+	return LAPI.httpSrv.ListenAndServe()
+}
+func (LAPI *LibraryApI) Shutdown(ctx context.Context) error {
+	return LAPI.httpSrv.Shutdown(ctx)
 }
 
-func (LAPI LibraryApI) configRoutes() {
+func (LAPI *LibraryApI) configRoutes() {
 	router := gin.Default()
 
 	router.Use(gzipMiddleware.GzipMiddleware())
@@ -71,6 +70,7 @@ func (LAPI LibraryApI) configRoutes() {
 
 		protected := user.Group("", auth.Middleware)
 		protected.GET("/profile", LAPI.HowIamToken)
+
 	}
 
 	tasks := router.Group("/tasks", auth.Middleware)

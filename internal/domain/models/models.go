@@ -10,6 +10,7 @@ type Task struct {
 	DateCreated time.Time `json:"date_created,omitempty"`
 	Urgency     string    `json:"urgency"      validate:"required,oneof=low medium high"`
 	Status      string    `json:"status,omitempty" validate:"omitempty,oneof=new in_progress finish"`
+	Deleted     bool      `json:"deleted"`
 }
 
 type User struct {

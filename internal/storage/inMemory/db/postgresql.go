@@ -12,11 +12,17 @@ import (
 )
 
 type PsqlStorage struct {
-	db *sql.DB
+	db   *sql.DB
+	Chan chan struct{}
 }
 
-func NewPsqlStorage(db *sql.DB) *PsqlStorage {
-	return &PsqlStorage{db: db}
+func NewPsqlStorageTask(db *sql.DB) *PsqlStorage {
+	gorutin := &PsqlStorage{
+		db:   db,
+		Chan: make(chan struct{}, 10),
+	}
+	go gorutin.CountTasks()
+	return gorutin
 }
 
 func (s *PsqlStorage) InfoUser(userID string) (*models.User, error) {

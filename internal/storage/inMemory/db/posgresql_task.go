@@ -7,19 +7,12 @@ import (
 	"database/sql"
 	errGLob "errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
-
-type PsqlStorageTask struct {
-	db *sql.DB
-}
-
-func NewPsqlStorageTask(db *sql.DB) *PsqlStorage {
-	return &PsqlStorage{db: db}
-}
 
 func (s *PsqlStorage) GetTasks(userID string) ([]models.Task, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -28,7 +21,7 @@ func (s *PsqlStorage) GetTasks(userID string) ([]models.Task, error) {
 	query := `
 		SELECT task_id, user_id, title, description, date_created, urgency, status
 		FROM tasks
-		WHERE user_id = $1
+		WHERE user_id = $1 AND deleted = false
 		ORDER BY date_created DESC`
 
 	rows, err := s.db.QueryContext(ctx, query, userID)
@@ -106,15 +99,23 @@ func (s *PsqlStorage) DeleteTask(taskID string, userID string) error {
 	defer cancel()
 
 	res, err := s.db.ExecContext(ctx,
-		`DELETE FROM tasks WHERE task_id = $1 AND user_id = $2`,
+		`UPDATE tasks SET deleted = true WHERE task_id = $1 AND user_id = $2 AND deleted = false`,
 		taskID, userID)
+
 	if err != nil {
 		return fmt.Errorf("postgres: delete task error: %w", err)
 	}
+
 	n, err := res.RowsAffected()
-	if err != nil || n == 0 {
-		return fmt.Errorf("postgres: rows affected: %w or not found task", err)
+	if err != nil {
+		return fmt.Errorf("postgres: rows affected: %w", err)
 	}
+	if n == 0 {
+		return errors.ErrNotFind
+	}
+
+	s.Chan <- struct{}{}
+	fmt.Printf("send  channel: %s\n", taskID)
 
 	return nil
 }
@@ -126,7 +127,7 @@ func (s *PsqlStorage) InfoTask(taskID string, userID string) (*models.Task, erro
 	query := `
 		SELECT task_id, user_id, title, description, date_created, urgency, status
 		FROM tasks
-		WHERE user_id = $1 AND task_id = $2`
+		WHERE user_id = $1 AND task_id = $2 AND deleted = false`
 
 	var t models.Task
 	err := s.db.QueryRowContext(ctx, query, userID, taskID).Scan(
@@ -141,6 +142,9 @@ func (s *PsqlStorage) InfoTask(taskID string, userID string) (*models.Task, erro
 	if errGLob.Is(err, sql.ErrNoRows) {
 		return nil, errors.ErrNotFind
 	}
+	if err != nil {
+		return nil, err
+	}
 	return &t, nil
 }
 
@@ -154,7 +158,7 @@ func (s *PsqlStorage) RepeatInfoTask(taskID, userID string, task models.Task) (*
 		    description = COALESCE(NULLIF($2, ''), description),
 		    urgency     = COALESCE(NULLIF($3, ''), urgency),
 		    status      = COALESCE(NULLIF($4, ''), status)
-		WHERE task_id = $5 AND user_id = $6
+		WHERE task_id = $5 AND user_id = $6 AND deleted = false
 		RETURNING task_id, user_id, title, description, date_created, urgency, status`
 
 	var updated models.Task
@@ -181,4 +185,44 @@ func (s *PsqlStorage) RepeatInfoTask(taskID, userID string, task models.Task) (*
 		return nil, fmt.Errorf("postgres: update task error: %w", err)
 	}
 	return &updated, nil
+}
+
+func (s *PsqlStorage) CountTasks() {
+	timer := time.NewTicker(100 * time.Millisecond)
+	defer timer.Stop()
+
+	for range timer.C {
+		if len(s.Chan) == cap(s.Chan) {
+			for i := 0; i < cap(s.Chan); i++ {
+				fmt.Println("task full deleted")
+				<-s.Chan
+			}
+			if err := s.FullDeletedTasks(); err != nil {
+				log.Printf("error deleted tasks: %v\n", err)
+			}
+		}
+	}
+}
+
+func (s *PsqlStorage) FullDeletedTasks() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("transaction error: %w", err)
+	}
+	defer tx.Rollback()
+
+	_, err = tx.ExecContext(ctx, `DELETE FROM tasks WHERE deleted = true`)
+	if err != nil {
+		return fmt.Errorf("delete tasks error: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit transaction error: %w", err)
+	}
+
+	log.Println("10 tasks deleted")
+	return nil
 }

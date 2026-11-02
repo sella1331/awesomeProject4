@@ -4,13 +4,22 @@ import (
 	"awesomeProject4/internal/server"
 	"awesomeProject4/internal/storage/inMemory"
 	"awesomeProject4/internal/storage/inMemory/db"
+	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func main() {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 	log.Println("Library service started..")
 	//TODO configuration server
 	var usersStorage server.UserRepository
@@ -24,16 +33,31 @@ func main() {
 		log.Println("✅ Успешное подключение к PostgreSQL! Используется база данных.")
 		defer dbSql.Close()
 
-		usersStorage = db.NewPsqlStorage(dbSql)
+		usersStorage = db.NewPsqlStorageTask(dbSql)
 		tasksStorage = db.NewPsqlStorageTask(dbSql)
 	}
 	//
 	server := server.NewLiraryAPI(tasksStorage, usersStorage)
 	//TODO start server
-	if err := server.Run(); err != nil {
-		log.Fatal(err)
-	}
+	serverErrors := make(chan error, 1)
+	go func() {
+		log.Println("🚀 HTTP server is running...")
+		if err := server.Run(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			serverErrors <- err
+		}
+	}()
 	//TODO stop server
-	log.Println("Library service stopped")
+	select {
+	case err := <-serverErrors:
+		log.Fatalf("Critical server error: %v", err)
+	case <-ctx.Done():
+		log.Println(" stopping...")
+	}
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		log.Printf(" shutdown error: %v\n", err)
+	}
+	log.Println("service stopped")
 
 }
