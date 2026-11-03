@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$PROJECT_DIR$/migrations/000002_create_tasks_table.down.sql" value="6420dc21-fa37-405f-ba86-e94ba1dd85e1" />
+    <file url="file://$PROJECT_DIR$/migrations/000002_create_tasks_table.up.sql" value="6420dc21-fa37-405f-ba86-e94ba1dd85e1" />
+  </component>
+</project>
