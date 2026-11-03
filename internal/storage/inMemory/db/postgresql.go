@@ -1,12 +1,13 @@
 package db
 
 import (
-	"awesomeProject4/internal/domain/errors"
-	"awesomeProject4/internal/domain/models"
 	"context"
 	"database/sql"
 	"fmt"
 	"time"
+
+	"github.com/sella1331/awesomeProject4.git/internal/domain/errors"
+	"github.com/sella1331/awesomeProject4.git/internal/domain/models"
 
 	"golang.org/x/crypto/bcrypt"
 )

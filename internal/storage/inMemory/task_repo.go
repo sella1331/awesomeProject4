@@ -1,11 +1,12 @@
 package inMemory
 
 import (
-	"awesomeProject4/internal/domain/errors"
-	"awesomeProject4/internal/domain/models"
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/sella1331/awesomeProject4.git/internal/domain/errors"
+	"github.com/sella1331/awesomeProject4.git/internal/domain/models"
 
 	"dario.cat/mergo"
 	"github.com/google/uuid"

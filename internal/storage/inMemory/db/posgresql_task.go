@@ -1,14 +1,15 @@
 package db
 
 import (
-	"awesomeProject4/internal/domain/errors"
-	"awesomeProject4/internal/domain/models"
 	"context"
 	"database/sql"
 	errGLob "errors"
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/sella1331/awesomeProject4.git/internal/domain/errors"
+	"github.com/sella1331/awesomeProject4.git/internal/domain/models"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"

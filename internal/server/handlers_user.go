@@ -1,12 +1,13 @@
 package server
 
 import (
-	"awesomeProject4/internal/auth"
-	"awesomeProject4/internal/domain/errors"
-	"awesomeProject4/internal/domain/models"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/sella1331/awesomeProject4.git/internal/auth"
+	"github.com/sella1331/awesomeProject4.git/internal/domain/errors"
+	"github.com/sella1331/awesomeProject4.git/internal/domain/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -174,7 +175,6 @@ func (LAPI *LibraryApI) allUsers(ctx *gin.Context) {
 
 func (LAPI *LibraryApI) HowIamToken(ctx *gin.Context) {
 	userID := ctx.GetString("userID")
-	fmt.Printf(userID)
 	if userID == "" {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "not found userID"})
 		return

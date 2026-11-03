@@ -1,10 +1,11 @@
 package server
 
 import (
-	"awesomeProject4/internal/auth"
-	"awesomeProject4/internal/domain/gzipMiddleware"
-	"awesomeProject4/internal/domain/models"
 	"context"
+
+	"github.com/sella1331/awesomeProject4.git/internal/auth"
+	"github.com/sella1331/awesomeProject4.git/internal/domain/gzipMiddleware"
+	"github.com/sella1331/awesomeProject4.git/internal/domain/models"
 	//"errors"
 	"log"
 	"net/http"
@@ -33,6 +34,7 @@ type LibraryApI struct {
 	httpSrv *http.Server
 	tasks   TaskRepository
 	users   UserRepository
+	domain  string
 }
 
 func NewLiraryAPI(tasks TaskRepository, users UserRepository) *LibraryApI {
@@ -49,9 +51,6 @@ func NewLiraryAPI(tasks TaskRepository, users UserRepository) *LibraryApI {
 func (LAPI *LibraryApI) Run() error {
 	log.Printf("Listening on port %s ...", LAPI.httpSrv.Addr)
 	return LAPI.httpSrv.ListenAndServe()
-}
-func (LAPI *LibraryApI) Shutdown(ctx context.Context) error {
-	return LAPI.httpSrv.Shutdown(ctx)
 }
 
 func (LAPI *LibraryApI) configRoutes() {
@@ -82,4 +81,7 @@ func (LAPI *LibraryApI) configRoutes() {
 		tasks.DELETE("/:taskID", LAPI.deleteTask)
 	}
 	LAPI.httpSrv.Handler = router
+}
+func (LAPI *LibraryApI) Shutdown(ctx context.Context) error {
+	return LAPI.httpSrv.Shutdown(ctx)
 }

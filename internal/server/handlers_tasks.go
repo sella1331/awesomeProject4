@@ -1,11 +1,12 @@
 package server
 
 import (
-	"awesomeProject4/internal/domain/errors"
-	"awesomeProject4/internal/domain/models"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/sella1331/awesomeProject4.git/internal/domain/errors"
+	"github.com/sella1331/awesomeProject4.git/internal/domain/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +14,6 @@ import (
 func (LAPI *LibraryApI) allTasks(ctx *gin.Context) {
 	userID := ctx.GetString("userID")
 	if userID == "" {
-		fmt.Printf(userID)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "not found userID"})
 		return
 	}
@@ -30,7 +30,6 @@ func (LAPI *LibraryApI) createTask(ctx *gin.Context) {
 	fmt.Printf("USERIDDD %s", userID)
 
 	if userID == "" {
-		fmt.Printf(userID)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "not found userID"})
 		return
 	}

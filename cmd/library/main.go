@@ -1,9 +1,6 @@
 package main
 
 import (
-	"awesomeProject4/internal/server"
-	"awesomeProject4/internal/storage/inMemory"
-	"awesomeProject4/internal/storage/inMemory/db"
 	"context"
 	"errors"
 	"fmt"
@@ -13,6 +10,10 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/sella1331/awesomeProject4.git/internal/server"
+	"github.com/sella1331/awesomeProject4.git/internal/storage/inMemory"
+	"github.com/sella1331/awesomeProject4.git/internal/storage/inMemory/db"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -33,10 +34,10 @@ func main() {
 		log.Println("✅ Успешное подключение к PostgreSQL! Используется база данных.")
 		defer dbSql.Close()
 
-		usersStorage = db.NewPsqlStorageTask(dbSql)
-		tasksStorage = db.NewPsqlStorageTask(dbSql)
+		psqlStorage := db.NewPsqlStorageTask(dbSql)
+		usersStorage = psqlStorage
+		tasksStorage = psqlStorage
 	}
-	//
 	server := server.NewLiraryAPI(tasksStorage, usersStorage)
 	//TODO start server
 	serverErrors := make(chan error, 1)
