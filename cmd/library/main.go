@@ -32,7 +32,11 @@ func main() {
 		tasksStorage = inMemory.NewStorage()
 	} else {
 		log.Println("✅ Успешное подключение к PostgreSQL! Используется база данных.")
-		defer dbSql.Close()
+		defer func() {
+			if err := dbSql.Close(); err != nil {
+				log.Printf("error down db: %v", err)
+			}
+		}()
 
 		psqlStorage := db.NewPsqlStorageTask(dbSql)
 		usersStorage = psqlStorage
