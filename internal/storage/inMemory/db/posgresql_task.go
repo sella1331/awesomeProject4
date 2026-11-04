@@ -29,7 +29,9 @@ func (s *PsqlStorage) GetTasks(userID string) ([]models.Task, error) {
 	if err != nil {
 		return nil, fmt.Errorf("postgres: get tasks: %w", err)
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	tasks := make([]models.Task, 0)
 	for rows.Next() {
@@ -213,7 +215,9 @@ func (s *PsqlStorage) FullDeletedTasks() error {
 	if err != nil {
 		return fmt.Errorf("transaction error: %w", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		_ = tx.Rollback()
+	}()
 
 	_, err = tx.ExecContext(ctx, `DELETE FROM tasks WHERE deleted = true`)
 	if err != nil {

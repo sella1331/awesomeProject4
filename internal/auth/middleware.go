@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -26,6 +25,6 @@ func Middleware(ctx *gin.Context) {
 		return
 	}
 	ctx.Set("userID", claims.UserID)
-	fmt.Printf(claims.UserID)
+	//	fmt.Printf(claims.UserID)
 	ctx.Next()
 }

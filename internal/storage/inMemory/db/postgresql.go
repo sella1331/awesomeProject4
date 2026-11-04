@@ -55,11 +55,15 @@ func (s *PsqlStorage) GetUsers() ([]models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 	var users []models.User
 	for rows.Next() {
 		var user models.User
-		rows.Scan(&user.UUID, &user.Username, &user.Email, &user.Password)
+		if err := rows.Scan(&user.UUID, &user.Username, &user.Email, &user.Password); err != nil {
+			return nil, fmt.Errorf("postgres: scan task: %w", err)
+		}
 
 		users = append(users, user)
 	}

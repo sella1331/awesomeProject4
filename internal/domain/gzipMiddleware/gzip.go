@@ -38,7 +38,9 @@ func GzipMiddleware() gin.HandlerFunc {
 				c.AbortWithStatus(http.StatusBadRequest)
 				return
 			}
-			defer gz.Close()
+			defer func() {
+				_ = gz.Close()
+			}()
 			c.Request.Body = gz
 		}
 
@@ -53,7 +55,9 @@ func GzipMiddleware() gin.HandlerFunc {
 		c.Next()
 
 		if gw.writer != nil {
-			gw.writer.Close()
+			defer func() {
+				_ = gw.writer.Close()
+			}()
 		}
 	}
 }

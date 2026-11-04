@@ -6,7 +6,7 @@ import (
 	"github.com/sella1331/awesomeProject4.git/internal/auth"
 	"github.com/sella1331/awesomeProject4.git/internal/domain/gzipMiddleware"
 	"github.com/sella1331/awesomeProject4.git/internal/domain/models"
-	//"errors"
+
 	"log"
 	"net/http"
 

@@ -78,7 +78,9 @@ func TestLibraryApI_DeletedUser(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
@@ -148,8 +150,9 @@ func TestLibraryApI_HowIam(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
-
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
 
@@ -255,7 +258,9 @@ func TestLibraryApI_InfoTask(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
@@ -384,7 +389,9 @@ func TestLibraryApI_RepeatInfoTask(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
@@ -457,7 +464,7 @@ func TestLibraryApI_RepeaterLogin(t *testing.T) {
 			requestBody:    `{"username":"masha","email":"test@mail.ru","password":"Password123!"}`,
 			shouldCallMock: false,
 			expectedStatus: http.StatusInternalServerError,
-			expectedBody:   `{"error":"invalid id type"}`,
+			expectedBody:   `{"error":"invalid user id type"}`,
 		},
 		{
 			name:           "Bad JSON",
@@ -504,12 +511,16 @@ func TestLibraryApI_RepeaterLogin(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			mockUsers := NewMockUserRepository(t)
 			if tc.shouldCallMock {
+				userID, ok := tc.userIDContext.(string)
+				if !ok {
+					t.Fatalf("failed userIDContext %T", tc.userIDContext)
+				}
+
 				mockUsers.
-					On("RepeatInfoUsers", tc.userIDContext.(string), tc.mockInputUser).
+					On("RepeatInfoUsers", userID, tc.mockInputUser).
 					Return(tc.mockReturnUser, tc.mockError).
 					Once()
 			}
-
 			LibrarysApI := LibraryApI{
 				domain: "test.org",
 				users:  mockUsers,
@@ -533,7 +544,9 @@ func TestLibraryApI_RepeaterLogin(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
@@ -632,7 +645,13 @@ func TestLibraryApI_Shutdown(t *testing.T) {
 			ctx := context.Background()
 			if tc.cancelCtx {
 				go func() {
-					_, _ = http.Get("http://127.0.0.1:8899/slow")
+					resp, err := http.Get("http://127.0.0.1:8899/slow")
+					if err != nil {
+						return
+					}
+					defer func() {
+						_ = resp.Body.Close()
+					}()
 				}()
 				time.Sleep(20 * time.Millisecond)
 
@@ -769,7 +788,9 @@ func TestLibraryApI_UserLogin(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
@@ -885,8 +906,9 @@ func TestLibraryApI_UserRegister(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
-
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
 
@@ -985,7 +1007,9 @@ func TestLibraryApI_allTasks(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
@@ -1061,7 +1085,9 @@ func TestLibraryApI_allUsers(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)
@@ -1158,7 +1184,9 @@ func TestLibraryApI_deleteTask(t *testing.T) {
 
 			resp, err := http.DefaultClient.Do(req)
 			require.NoError(t, err)
-			defer resp.Body.Close()
+			defer func() {
+				_ = resp.Body.Close()
+			}()
 
 			body, err := io.ReadAll(resp.Body)
 			require.NoError(t, err)

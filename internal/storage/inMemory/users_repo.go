@@ -52,7 +52,7 @@ func (s *UsStorage) RegisterUser(user models.User) error {
 		return err
 	}
 	user.Password = string(hash)
-	fmt.Printf("User %s, Password hash: %s\n", user, string(hash))
+	fmt.Printf("User %v, Password hash: %s\n", user, string(hash))
 	s.users[userID] = user
 	return nil
 }
